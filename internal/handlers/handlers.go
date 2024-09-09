@@ -30,7 +30,7 @@ func GenerateManifestHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Authorization header missing")
 		return
 	}
-	// Assume the format is "Bearer {token}"
+	
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader {
 		http.Error(w, "Invalid Authorization header format", http.StatusUnauthorized)
@@ -38,7 +38,7 @@ func GenerateManifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate the token
+	
 	_, err := auth.ValidateJWT(tokenString)
 	if err != nil {
 		fmt.Println("Unauthorized: "+err.Error())
@@ -46,19 +46,16 @@ func GenerateManifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate a unique task ID
 	id := uuid.New()
 	taskID:= id.String() // Replace with actual logic to generate unique ID
 	fmt.Println("Generated UUID:",taskID)
 
-	// Initialize task status
 	statusMutex.Lock()
 	manifestStatus[taskID] = "InProgress...!!!"
 	statusMutex.Unlock()
 
 	inputFile := r.URL.Query().Get("input")
 	
-	// Start manifest generation in a Goroutine
 	go func(taskID string) {
 		defer func() {
 			statusMutex.Lock()
@@ -66,7 +63,6 @@ func GenerateManifestHandler(w http.ResponseWriter, r *http.Request) {
 			statusMutex.Unlock()
 		}()
 
-		// Your actual manifest generation logic
 		err = manifest.GenerateManifest(inputFile, outputDir)
 		if err != nil {
 			// Handle error and update status
@@ -84,17 +80,6 @@ func GenerateManifestHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 	fmt.Println(response)
 	w.Write([]byte(fmt.Sprintf("status: Manifest generation started\n taskID: %s", taskID)))
-	// if err := json.NewEncoder(w).Encode(response); err != nil {
-	// 	http.Error(w, "Error encoding JSON response", http.StatusInternalServerError)
-	// }
-
-	// err = manifest.GenerateManifest(inputFile, outputDir)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-	// fmt.Println("Manifest generated successfully")
-	// w.Write([]byte("Manifest generated successfully"))
 }
 
 func StreamManifestHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +97,7 @@ func StreamManifestHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Authorization header missing")
 		return
 	}
-	// Assume the format is "Bearer {token}"
+	
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader {
 		http.Error(w, "Invalid Authorization header format", http.StatusUnauthorized)
@@ -120,7 +105,7 @@ func StreamManifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate the token
+	
 	_, err := auth.ValidateJWT(tokenString)
 	if err != nil {
 		fmt.Println("Unauthorized: "+err.Error())
@@ -143,18 +128,7 @@ func StreamManifestHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid protocol", http.StatusBadRequest)
 		return
 	}
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	// http.ServeFile(w, r, manifestPath)
-	// manifestPath := filepath.Join("./manifests", "manifest.m3u8")
-	// manifestData, err := os.ReadFile(manifestPath)
-	// if err != nil {
-	// 	http.Error(w, "Manifest not found", http.StatusNotFound)
-	// 	fmt.Println("Manifest not found")
-	// 	return
-	// }
 
-	// w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Println("Manifest served successfully")
 	http.ServeFile(w, r, manifestPath)
 	manifestData, err := os.ReadFile(manifestPath)

@@ -1,4 +1,3 @@
-// cmd/server/main.go
 package main
 
 import (
@@ -28,13 +27,6 @@ func main() {
 	r.HandleFunc("/stream/{protocol}/{resolution}/manifest", func(w http.ResponseWriter, r *http.Request) {
 		authStreamMiddlewareHandler.ServeHTTP(w, r)
 	}).Methods("GET")
-	// r.HandleFunc("/stream", func(w http.ResponseWriter, r *http.Request) {
-    // 	authStreamMiddlewareHandler.ServeHTTP(w, r)
-	// }).Methods("GET")
-
-	// r.HandleFunc("/login", auth.LoginHandler).Methods("POST")
-	// r.HandleFunc("/generate", handlers.GenerateManifestHandler).Methods("GET")
-	// r.HandleFunc("/stream", handlers.StreamManifestHandler).Methods("GET")
 
 	corsHandler := gohandler.CORS(
         gohandler.AllowedOrigins([]string{"*"}), // Adjust this to specific origins if needed

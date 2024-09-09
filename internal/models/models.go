@@ -1,4 +1,3 @@
-// pkg/models/models.go
 package models
 
 type User struct {

@@ -20,7 +20,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
             return
         }
 
-        // Store user info in context
         r.Header.Set("username", claims.Username)
 
         next.ServeHTTP(w, r)

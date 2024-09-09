@@ -1,4 +1,3 @@
-// internal/auth/auth.go
 package auth
 
 import (
@@ -19,7 +18,6 @@ type Claims struct {
 }
 var users = map[string]string{"puneet": "puneet123", "devops": "devops123"}
 
-// LoginHandler handles user login and returns a JWT token
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -45,7 +43,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Generate a JWT token
 	token, err := GenerateJWT(user.Username)
 	if err != nil {
 		fmt.Println("Error generating token")
@@ -53,9 +50,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return the token in the response
-	// w.Header().Set("Content-Type", "application/json")
-	// w.Write([]byte(`{"token":"` + token + `"}`))
 	w.WriteHeader(http.StatusOK)
     w.Write([]byte(token))
 }
